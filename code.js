@@ -1,30 +1,33 @@
-var fs = require('fs')
+const fs = require('fs')
 
-var data = ''
+let data = ''
 
-var readStream = fs.createReadStream('input.in', 'utf8')
+const readStream = fs.createReadStream('input.in', 'utf8')
 
 readStream.on('data', function(chunk) {  
   data += chunk
-}).on('end', function() {
+}).on('end', () => {
   const ids = data.split('\r\n')
-  let total2 = 0
-  let total3 = 0
-  ids.forEach(id => {
-    let sum2 = false
-    let sum3 = false
-    for (let i = 0; i < id.length; i = i + 1) {
-      const char = id.charAt(i)
-      const newStr = id.replace(RegExp(char, 'g'), '')
-      console.log(newStr)
-      const diff = id.length - newStr.length
-      if (diff === 2) sum2 = true
-      else if (diff === 3) sum3 = true
+  const values = []
+  for (let i = 0; i < ids.length; i = i + 1) {
+    for (let j = 0; j < ids.length; j = j + 1) {
+      const str1 = ids[i]
+      const str2 = ids[j]
+      let id = ''
+      for (let k = 0; k < 26; k = k + 1) {
+        const char1 = str1.charCodeAt(k)
+        const char2 = str2.charCodeAt(k)
+        if (char1 === char2) {
+          id = `${id}${String.fromCharCode(char1)}`
+        }
+      }
+      if ((str1.length - id.length) === 1) {
+        console.log(id)
+        return
+      }
+      values.push(id)
     }
-    if (sum2) total2 = total2 + 1
-    if (sum3) total3 = total3 + 1
-  })
-  console.log(`Total 2: ${total2}`)
-  console.log(`Total 3: ${total3}`)
-  console.log(total2 * total3)
+  }
+  values.sort((id1, id2) => id2.length - id1.length)
+  console.log('Final value', values[0])
 })
