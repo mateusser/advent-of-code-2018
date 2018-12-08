@@ -4,18 +4,18 @@
 
 #define FABRIC_SIZE 1000
 
-void countFabric (char fabric[FABRIC_SIZE][FABRIC_SIZE]);
+void countFabric (int fabric[FABRIC_SIZE][FABRIC_SIZE]);
 void getStarts (char starts[10], int *startLine, int *startColumn);
 void getSizes (char sizes[10], int *width, int *height);
 
 int main (int argc, char *argv[]) {
   int i, j;
-  char fabric[FABRIC_SIZE][FABRIC_SIZE];
+  int fabric[FABRIC_SIZE][FABRIC_SIZE];
   for (i = 0; i < FABRIC_SIZE; i++) {
     for (j = 0; j < FABRIC_SIZE; j++) {
-      fabric[i][j] = '.';
+      fabric[i][j] = -1;
     }
-  }  
+  }
 
   char id[10], at[10], starts[10], size[10];
   i = 0;
@@ -26,13 +26,27 @@ int main (int argc, char *argv[]) {
     int width, height;
     getSizes(size, &width, &height);
 
+    char *idNum = id + 1;
+    int idInt = atoi(idNum);
+
     int k, l;
+    int flag = 0;
     for (k = startLine; k < (startLine + width); k++) {
       for (l = startColumn; l < (startColumn + height); l++) {
-        if (fabric[k][l] == '.') fabric[k][l] = '#';
-        else if (fabric[k][l] == '#') fabric[k][l] = 'X';
+        if (fabric[k][l] == -1) fabric[k][l] = idInt; // not claimed
+        else { // claimed
+          if (fabric[k][l] != -10 && !flag) {
+            printf("%d, %d, ", fabric[k][l], idInt);
+          }
+          if (fabric[k][l] != flag && fabric[k][l] != -10) {
+            printf("%d, ", fabric[k][l]);
+          }
+          flag = fabric[k][l];
+          fabric[k][l] = -10;
+        }
       }
     }
+    // if (!flag) printf("%d, ", idInt); // potential to be not overlapped
     i++;
   }
 
@@ -41,7 +55,7 @@ int main (int argc, char *argv[]) {
   return 0;
 }
 
-void countFabric (char fabric[FABRIC_SIZE][FABRIC_SIZE]) {
+void countFabric (int fabric[FABRIC_SIZE][FABRIC_SIZE]) {
   int i, j;
   int sumP = 0;
   int sumH = 0;
@@ -49,13 +63,13 @@ void countFabric (char fabric[FABRIC_SIZE][FABRIC_SIZE]) {
 
   for (i = 0; i < FABRIC_SIZE; i++) {
     for (j = 0; j < FABRIC_SIZE; j++) {
-      if (fabric[i][j] == '.') sumP++;
-      else if (fabric[i][j] == '#') sumH++;
-      else if (fabric[i][j] == 'X') sumX++;
+      if (fabric[i][j] == -1) sumP++;
+      else if (fabric[i][j] == -10) sumX++;
+      else sumH++;
     }
   }
 
-  printf(".  %d\n", sumP);
+  printf("\n.  %d\n", sumP);
   printf("#  %d\n", sumH);
   printf("X  %d\n", sumX);
   printf("TOTAL  %d\n", sumP + sumH + sumX);
