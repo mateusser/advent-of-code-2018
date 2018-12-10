@@ -127,29 +127,24 @@ readStream.on('data', function(chunk) {
     }
   })
 
-  // get the guard who sleeps the most
-  let sleepMost = 0
-  let sleepMostId = -1
-  Object.keys(guards).forEach(id => {
-    if (guards[id].minutesSleeping > sleepMost) {
-      sleepMost = guards[id].minutesSleeping
-      sleepMostId = id
-    }
-  })
-
-  // get the minute he sleeps the most
+  // get the guard who sleeps the most in certain minute
+  let guardId = 0
   let minuteMost = 0
   let minuteMostId = -1
-  Object.keys(guards[sleepMostId]).forEach(minute => {
-    if (isNaN(minute)) return
-    if (guards[sleepMostId][minute] > minuteMost) {
-      minuteMost = guards[sleepMostId][minute]
-      minuteMostId = minute
-    }
+  Object.keys(guards).forEach(id => {
+    Object.keys(guards[id]).forEach(minute => {
+      if (isNaN(minute)) return
+
+      if (guards[id][minute] > minuteMost) {
+        minuteMost = guards[id][minute]
+        minuteMostId = minute
+        guardId = id
+      }
+    })
   })
 
-  console.log('ID:', sleepMostId)
+  console.log('ID:', guardId)
   console.log('Clock Minutes:', minuteMostId)
-  console.log('ID * Minute:', minuteMostId * sleepMostId)
+  console.log('ID * Minute:', minuteMostId * guardId)
 
 })
